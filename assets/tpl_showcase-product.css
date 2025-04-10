@@ -629,7 +629,68 @@
 .mobile-view .sale-banner {
   max-width: 368px;
   height: 562px;
-  margin: 0 auto;
+  margin: 50px auto;
+}
+
+.tpl_showcase-product .columns-4 .countdown-timer {
+  gap: 12px;
+}
+
+.tpl_showcase-product .columns-4 .countdown-timer .time-wrapper {
+  min-width: 30px;
+}
+.tpl_showcase-product .columns-4 .countdown-timer .time {
+  font-size: 16px;
+}
+
+.tpl_showcase-product .columns-4 .countdown-timer .divider {
+  height: 42px;
+}
+
+@media (max-width: 479px) {
+  .tpl_showcase-product .countdown-timer {
+    gap: 12px;
+  }
+  .tpl_showcase-product .countdown-timer .time-wrapper {
+    min-width: 30px;
+  }
+  .tpl_showcase-product .countdown-timer .time {
+    font-size: 16px;
+  }
+
+  .tpl_showcase-product .countdown-timer .divider {
+    height: 42px;
+  }
+}
+
+@media (max-width: 989px) {
+  .tpl_showcase-product .tabs.vertical,
+  .tpl_showcase-product .tabs.horizontal {
+    overflow-x: auto;
+  }
+  .tpl_showcase-product .quick-view-image img {
+    height: auto;
+  }
+  .tpl_showcase-product .products-grid {
+    display: none;
+  }
+
+  .tpl_showcase-product .mobile-view {
+    display: block;
+  }
+
+  .tpl_showcase-product .swiper-hidden {
+    padding: 0;
+    overflow: hidden;
+    margin-right: -16px;
+  }
+  .tpl_showcase-product .quick-view-btn {
+    padding-top: 11px;
+    padding-bottom: 12px;
+  }
+  .tab-contents {
+    margin-top: 32px;
+  }
 }
 
 @media (min-width: 768px) {
@@ -705,66 +766,5 @@
   .tpl_showcase-product .layout {
     grid-template-columns: clamp(180px, 20%, 300px) 1fr;
     gap: clamp(30px, 6.4%, 100px);
-  }
-}
-
-.tpl_showcase-product .columns-4 .countdown-timer {
-  gap: 8px;
-}
-
-.tpl_showcase-product .columns-4 .countdown-timer .time-wrapper {
-  min-width: 30px;
-}
-.tpl_showcase-product .columns-4 .countdown-timer .time {
-  font-size: 16px;
-}
-
-.tpl_showcase-product .columns-4 .countdown-timer .divider {
-  height: 42px;
-}
-
-@media (max-width: 479px) {
-  .tpl_showcase-product .countdown-timer {
-    gap: 8px;
-  }
-  .tpl_showcase-product .countdown-timer .time-wrapper {
-    min-width: 30px;
-  }
-  .tpl_showcase-product .countdown-timer .time {
-    font-size: 16px;
-  }
-
-  .tpl_showcase-product .countdown-timer .divider {
-    height: 42px;
-  }
-}
-
-@media (max-width: 989px) {
-  .tpl_showcase-product .tabs.vertical,
-  .tpl_showcase-product .tabs.horizontal {
-    overflow-x: auto;
-  }
-  .tpl_showcase-product .quick-view-image img {
-    height: auto;
-  }
-  .tpl_showcase-product .products-grid {
-    display: none;
-  }
-
-  .tpl_showcase-product .mobile-view {
-    display: block;
-  }
-
-  .tpl_showcase-product .swiper-hidden {
-    padding: 0;
-    overflow: hidden;
-    margin-right: -16px;
-  }
-  .tpl_showcase-product .quick-view-btn {
-    padding-top: 11px;
-    padding-bottom: 12px;
-  }
-  .tab-contents {
-    margin-top: 32px;
   }
 }

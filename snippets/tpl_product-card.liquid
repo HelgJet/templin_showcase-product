@@ -1,86 +1,72 @@
-{%- liquid
-  assign compare_at_price = product.compare_at_price
-  assign price = product.price
-  assign price_varies = product.price_varies
-  assign available = product.available
-  assign money_price = price | money
-  if price_varies
-    assign money_price = 'From {{ price }}'
-  endif
-  assign sold_out = true
-  if product.available
-    assign sold_out = false
-  endif
 
-  assign rating = product.metafields.custom.rating.value
-  assign new_label_period = section.settings.new_label_period | plus: 0
-  assign now = 'now' | date: '%s'
-  assign published_at = product.published_at | date: '%s'
-  assign days_since_published = now | minus: published_at | divided_by: 86400
--%}
+{%- liquid 
+    assign compare_at_price = product.compare_at_price
+    assign price = product.price
+    assign price_varies = product.price_varies 
+    assign available =  product.available
+    assign money_price = price | money 
+    if price_varies
+     assign money_price = 'From {{ price }}' 
+    endif
+     assign sold_out = true 
+    if product.available
+      assign sold_out = false 
+    endif 
 
-{%- assign money_price = price | money -%}
+    assign rating = product.metafields.custom.rating.value
+    assign new_label_period = section.settings.new_label_period | plus: 0
+    assign now = 'now' | date: '%s'
+    assign published_at = product.published_at | date: '%s'
+    assign days_since_published = now | minus: published_at | divided_by: 86400
+    -%}
+
+    {%- assign money_price = price | money -%}
 
 <div class="product-card{% if sold_out %} unavailable{% endif %}" data-product-handle="{{ product.handle }}">
-  <div class="product-image-wrapper">
-    <div class="product-badges">
-      {% render 'tpl_product-bages',
-        compare_at_price: compare_at_price,
-        price: price,
-        available: available,
-        sold_out: sold_out,
-        my_fields: product.metafields.custom.custom_label,
-        days_since_published: days_since_published,
-        new_label_period: new_label_period
-      %}
-    </div>
-
-    {% if compare_at_price > price and product.available %}
-      {% render 'tpl_save_icon', compare_at_price: compare_at_price, price: price %}
-    {% endif %}
-
-    {%- if product.featured_media != blank -%}
-      <img
-        class="product-image"
-        src="{{ product.featured_image | image_url: width: 500 }}"
-        alt="{{ product.featured_image.alt }}"
-        loading="lazy"
-      >
-    {%- endif -%}
-    <button class="btn quick-view-btn" data-handle="{{ product.handle }}">Quick View</button>
-  </div>
-  <div class="product-meta spacer-xl">
-    <div
-      class="product-vendor"
-      {% if product.vendor == shop.name %}
-        style="visibility: hidden;"
-      {% endif %}
-    >
-      {{ product.vendor }}
-    </div>
-
-    <h2 class="product-title">
-      <a href="{{ product.url }}" class="product-url">{{ product.title }}</a>
-    </h2>
-
-    {% if product.description != blank %}
-      <div class="product-description spacer">
-        {{ product.description | strip_html | truncatewords: 20 }}
-      </div>
-    {% endif %}
-    <div class="product-footer spacer">
-      <div class="product-price">
-        {% if compare_at_price and compare_at_price > price %}
-          <span class="old-price">{{ compare_at_price | money }}</span>
-        {% endif %}
-        <span class="new-price"> {{ money_price }}</span>
+    <div class="product-image-wrapper">
+      <div class="product-badges">
+        {% render 'tpl_product-bages', compare_at_price: compare_at_price, price: price, available: available, sold_out: sold_out, my_fields: product.metafields.custom.custom_label, days_since_published: days_since_published, new_label_period: new_label_period %}
       </div>
 
-      {%- if rating -%}
-        <div class="product-rating">
-          {% render 'tpl_rating', rating: rating %}
-        </div>
+      {% if compare_at_price > price and product.available %}
+        {% render 'tpl_save_icon', compare_at_price: compare_at_price, price: price %}
+      {%endif %}
+
+      {%- if product.featured_media != blank -%}
+        <img
+          class="product-image"
+          src="{{ product.featured_image | image_url: width: 500 }}"
+          alt="{{ product.featured_image.alt | default: product.title }}"
+          loading="lazy"
+        >
       {%- endif -%}
+      <button class="btn quick-view-btn" data-handle="{{ product.handle }}">Quick View</button>
+    </div>
+    <div class="product-meta spacer-xl">
+
+      <div class="product-vendor" {% if product.vendor == shop.name %} style="visibility: hidden;"{% endif %}>{{ product.vendor }}</div>
+
+      <h2 class="product-title">   <a href="{{ product.url }}" class="product-url">{{ product.title }}</a></h2>
+
+      {% if product.description != blank %} 
+      <div class="product-description spacer">
+          {{ product.description | strip_html | truncatewords: 20 }} 
+      </div>
+
+    {% endif %}
+      <div class="product-footer spacer">
+        <div class="product-price">
+            {% if compare_at_price and compare_at_price > price %}
+            <span class="old-price">{{ compare_at_price | money }}</span>
+            {% endif %}
+            <span class="new-price"> {{ money_price }}</span>
+        </div>
+     
+              {%- if rating -%}
+                <div class="product-rating">
+                 {% render 'tpl_rating', rating: rating  %}
+                </div>
+        {%- endif -%}
+    </div>
     </div>
   </div>
-</div>

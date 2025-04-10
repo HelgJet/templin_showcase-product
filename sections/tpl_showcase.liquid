@@ -21,6 +21,26 @@
   >
     <div class="showcase-product">
       <div class="layout{% if section.settings.tab_layout == 'horizontal' %} full-width{% endif %}">
+        {%- liquid
+          assign sale = section.settings.sale_collection
+          assign launch_date = sale.metafields.custom.countdown.value
+          comment
+            now = 'now' | date: '%s' uses the current time in seconds since the epoch (1970-01-01 00:00:00 UTC)
+            launch_date = sale.metafields.custom.countdown.value uses the value of the metafield as a string
+            date: '%s' converts the string to a timestamp in seconds since the epoch 
+            Use server time for the countdown banner 
+          endcomment
+          assign now_unix = 'now' | date: '%s'
+          assign launch_unix = launch_date | date: '%s'
+          assign display_banner = false
+          
+          if sale and launch_date != blank and launch_unix > now_unix
+            assign display_banner = true
+            assign product_limit = section.settings.limit | minus: 1
+          else
+            assign product_limit = section.settings.limit
+          endif
+        -%}
         {% if section.settings.tab_layout == 'vertical' %}
           <div>
             {% if section.settings.title != blank %}
@@ -31,6 +51,9 @@
                 {% assign c = block.settings.collection %}
                 {% if c %}
                   <button
+                    role="tab"
+                    aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+                    aria-controls="panel-{{ block.id }}"
                     class="collection-tab{% if forloop.first %} active{% endif %}"
                     data-tab-index="{{ forloop.index0 }}"
                   >
@@ -38,16 +61,21 @@
                       <img
                         width="52"
                         height="52"
-                        src="{{ block.settings.image | image_url: width: 60 }}"
+                        src="{{ block.settings.image | image_url: width: 120 }}"
+                        srcset="{{ block.settings.image | image_url: width: 60 }} 1x, {{ block.settings.image | image_url: width: 120 }} 2x"
                         alt="{{ block.settings.block_title }}"
+                        loading="lazy"
                       >
                     {% elsif c.featured_image != blank %}
-                      <img
-                        width="52"
-                        height="52"
-                        src="{{ c.featured_image | image_url: width: 60 }}"
-                        alt="{{ c.featured_image.alt | escape }}"
-                      >
+                    
+                        <img
+                          width="52"
+                          height="52"
+                          src="{{ c.featured_image  | image_url: width: 120 }}"
+                          srcset="{{ c.featured_image  | image_url: width: 60 }} 1x, {{ c.featured_image  | image_url: width: 120 }} 2x"
+                          alt="{{ c.featured_image.alt }}"
+                          loading="lazy"
+                        >
                     {% endif %}
                     <span>
                       {% if block.settings.block_title == '' %}
@@ -68,7 +96,9 @@
               {% assign c = block.settings.collection %}
               {% if c %}
                 <button
-                  id="colection-tab-{{ block.id }}"
+                  role="tab"
+                  aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+                  aria-controls="panel-{{ block.id }}"
                   class="collection-tab{% if forloop.first %} active{% endif %}"
                   data-tab-index="{{ forloop.index0 }}"
                 >
@@ -76,16 +106,21 @@
                     <img
                       width="52"
                       height="52"
-                      src="{{ block.settings.image | image_url: width: 60 }}"
+                      src="{{ block.settings.image | image_url: width: 120 }}"
+                      srcset="{{ block.settings.image | image_url: width: 60 }} 1x, {{ block.settings.image | image_url: width: 120 }} 2x"
                       alt="{{ block.settings.block_title }}"
+                      loading="lazy"
                     >
                   {% elsif c.featured_image != blank %}
-                    <img
-                      width="52"
-                      height="52"
-                      src="{{ c.featured_image | image_url: width: 60 }}"
-                      alt="{{ c.featured_image.alt | escape }}"
-                    >
+                  
+                      <img
+                        width="52"
+                        height="52"
+                        src="{{ c.featured_image  | image_url: width: 120 }}"
+                        srcset="{{ c.featured_image  | image_url: width: 60 }} 1x, {{ c.featured_image  | image_url: width: 120 }} 2x"
+                        alt="{{ c.featured_image.alt }}"
+                        loading="lazy"
+                      >
                   {% endif %}
                   <span>
                     {% if block.settings.block_title == '' %}
@@ -104,20 +139,13 @@
         <div class="tab-contents">
           {% for block in section.blocks %}
             {% assign c = block.settings.collection %}
-            {% assign sale = section.settings.sale_collection %}
-            {% assign launch_date = sale.metafields.custom.countdown.value %}
-            {%- assign now_unix = 'now' | date: '%s' -%}
-            {%- assign launch_unix = sale.metafields.custom.countdown.value | date: '%s' -%}
-            {% assign product_limit = section.settings.limit %}
-            {% assign display_banner = false %}
-
-            {% if sale and launch_date != blank and launch_unix > now_unix %}
-              {% assign display_banner = true %}
-              {% assign product_limit = section.settings.limit | minus: 1 %}
-            {% endif %}
+           
             {% if c %}
               <div
-                id="colection-products-{{ block.id }}"
+                role="tabpanel"
+                id="panel-{{ block.id }}"
+                aria-labelledby="tab-{{ block.id }}"
+                tabindex="0"
                 class="collection-products{% if forloop.first %} active{% endif %}"
                 data-tab-content="{{ forloop.index0 }}"
               >
