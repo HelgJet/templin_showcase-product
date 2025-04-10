@@ -1,27 +1,29 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   // Find all .quick-view-btn
-  const quickViewButtons = document.querySelectorAll('.quick-view-btn');
+  const quickViewButtons = document.querySelectorAll(".quick-view-btn");
   quickViewButtons.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const sectionId = btn.closest('showcase-product')?.dataset.sectionId;
-      const modal = document.querySelector(`quick-view-modal[data-section-id="${sectionId}"]`);
+    btn.addEventListener("click", () => {
+      const sectionId = btn.closest("showcase-product")?.dataset.sectionId;
+      const modal = document.querySelector(
+        `quick-view-modal[data-section-id="${sectionId}"]`
+      );
 
       if (modal) {
         // Call method .open(handle)
-        modal.open(btn.dataset.handle, btn.closest('.product-card'));
+        modal.open(btn.dataset.handle, btn.closest(".product-card"));
       }
     });
   });
 });
 
-if (!customElements.get('showcase-product')) {
+if (!customElements.get("showcase-product")) {
   class ShowcaseProduct extends HTMLElement {
     constructor() {
       super();
       this.sectionEl = this;
-      this.tabContainer = this.querySelector('.tabs');
-      this.allTabBtns = this.tabContainer.querySelectorAll('.collection-tab');
-      this.allCollections = this.querySelectorAll('.collection-products');
+      this.tabContainer = this.querySelector(".tabs");
+      this.allTabBtns = this.tabContainer.querySelectorAll(".collection-tab");
+      this.allCollections = this.querySelectorAll(".collection-products");
     }
 
     connectedCallback() {
@@ -30,32 +32,34 @@ if (!customElements.get('showcase-product')) {
 
     initTabs() {
       this.allTabBtns.forEach((btn) => {
-        btn.addEventListener('click', () => {
-          this.allTabBtns.forEach((b) => b.classList.remove('active'));
-          btn.classList.add('active');
+        btn.addEventListener("click", () => {
+          this.allTabBtns.forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
           const tabIndex = btn.dataset.tabIndex;
           this.allCollections.forEach((col) => {
-            col.classList.remove('active');
+            col.classList.remove("active");
           });
-          const target = this.querySelector(`.collection-products[data-tab-content="${tabIndex}"]`);
+          const target = this.querySelector(
+            `.collection-products[data-tab-content="${tabIndex}"]`
+          );
           if (target) {
-            target.classList.add('active');
+            target.classList.add("active");
           }
         });
       });
     }
   }
 
-  customElements.define('showcase-product', ShowcaseProduct);
+  customElements.define("showcase-product", ShowcaseProduct);
 }
 
 // *** Countdown Timer ***
-if (!customElements.get('countdown-timer')) {
+if (!customElements.get("countdown-timer")) {
   class CountdownTimer extends HTMLElement {
     constructor() {
       super();
 
-      const dataCountDown = this.getAttribute('data-datetime');
+      const dataCountDown = this.getAttribute("data-datetime");
       this.countDown = new Date(dataCountDown);
 
       const { days, hours, minutes, seconds } = this.getDOMElements();
@@ -64,24 +68,32 @@ if (!customElements.get('countdown-timer')) {
         const now = new Date();
         const distance = Date.parse(this.countDown) - Date.parse(now);
 
-        days.innerText = this.setDataTime(Math.floor(distance / (1000 * 60 * 60 * 24)));
-        hours.innerText = this.setDataTime(Math.floor((distance / (1000 * 60 * 60)) % 24));
-        minutes.innerText = this.setDataTime(Math.floor((distance / 1000 / 60) % 60));
-        seconds.innerText = this.setDataTime(Math.floor((distance / 1000) % 60));
+        days.innerText = this.setDataTime(
+          Math.floor(distance / (1000 * 60 * 60 * 24))
+        );
+        hours.innerText = this.setDataTime(
+          Math.floor((distance / (1000 * 60 * 60)) % 24)
+        );
+        minutes.innerText = this.setDataTime(
+          Math.floor((distance / 1000 / 60) % 60)
+        );
+        seconds.innerText = this.setDataTime(
+          Math.floor((distance / 1000) % 60)
+        );
 
         if (distance <= 0) {
           clearInterval(this.interval);
-          this.classList.add('hidden');
+          this.classList.add("hidden");
         }
       }, 1000);
     }
 
     getDOMElements() {
       return {
-        days: this.querySelector('[data-days]'),
-        hours: this.querySelector('[data-hours]'),
-        minutes: this.querySelector('[data-minutes]'),
-        seconds: this.querySelector('[data-seconds]'),
+        days: this.querySelector("[data-days]"),
+        hours: this.querySelector("[data-hours]"),
+        minutes: this.querySelector("[data-minutes]"),
+        seconds: this.querySelector("[data-seconds]"),
       };
     }
 
@@ -90,7 +102,7 @@ if (!customElements.get('countdown-timer')) {
     }
   }
 
-  customElements.define('countdown-timer', CountdownTimer);
+  customElements.define("countdown-timer", CountdownTimer);
 }
 // *** Quick View + ATC via Storefront API ***
 
@@ -105,12 +117,13 @@ function isElementInViewport(element) {
   return (
     rect.top >= 0 &&
     rect.left >= 0 &&
-    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+    rect.bottom <=
+      (window.innerHeight || document.documentElement.clientHeight) &&
     rect.right <= (window.innerWidth || document.documentElement.clientWidth)
   );
 }
 
-if (!customElements.get('quick-view-modal')) {
+if (!customElements.get("quick-view-modal")) {
   class QuickViewModal extends HTMLElement {
     constructor() {
       super();
@@ -120,12 +133,12 @@ if (!customElements.get('quick-view-modal')) {
 
     connectedCallback() {
       // Grab references to the relevant child elements.
-      this.closeBtn = this.querySelector('.quick-view-close');
-      this.preloader = this.querySelector('.preloader');
-      this.productContainer = this.querySelector('.product-single');
+      this.closeBtn = this.querySelector(".quick-view-close");
+      this.preloader = this.querySelector(".preloader");
+      this.productContainer = this.querySelector(".product-single");
 
       // Close modal when clicking the "×" button
-      this.closeBtn?.addEventListener('click', () => this.close());
+      this.closeBtn?.addEventListener("click", () => this.close());
     }
 
     /**
@@ -139,14 +152,14 @@ if (!customElements.get('quick-view-modal')) {
       if (!productHandle || !originEl) return;
       this.modalEl = this;
       this._originEl = originEl;
-      this.productContainer = this.querySelector('.product-single');
-      this.preloader = this.querySelector('.preloader');
+      this.productContainer = this.querySelector(".product-single");
+      this.preloader = this.querySelector(".preloader");
 
-      this.productContainer.innerHTML = '';
+      this.productContainer.innerHTML = "";
       this.showPreloader();
       this.hidden = false;
 
-      this.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      this.scrollIntoView({ behavior: "smooth", block: "start" });
 
       fetch(`/products/${productHandle}?view=tpl_quick-view-modal`)
         .then((resp) => resp.text())
@@ -154,8 +167,8 @@ if (!customElements.get('quick-view-modal')) {
           this.hidePreloader();
 
           const parser = new DOMParser();
-          const doc = parser.parseFromString(html, 'text/html');
-          const productHTML = doc.querySelector('.product-single');
+          const doc = parser.parseFromString(html, "text/html");
+          const productHTML = doc.querySelector(".product-single");
 
           if (productHTML) {
             this.productContainer.innerHTML = productHTML.innerHTML;
@@ -165,7 +178,7 @@ if (!customElements.get('quick-view-modal')) {
           }
         })
         .catch((err) => {
-          console.error('QuickViewModal error:', err);
+          console.error("QuickViewModal error:", err);
           this.hidePreloader();
         });
     }
@@ -177,7 +190,7 @@ if (!customElements.get('quick-view-modal')) {
     close() {
       this.modalEl.hidden = true;
       if (this._originEl && !isElementInViewport(this._originEl)) {
-        this._originEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        this._originEl.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     }
 
@@ -200,14 +213,14 @@ if (!customElements.get('quick-view-modal')) {
      * to update the numeric input for quantity.
      */
     initQuantityButtons() {
-      const plusBtn = this.productContainer.querySelector('.qty-plus');
-      const minusBtn = this.productContainer.querySelector('.qty-minus');
-      const qtyInput = this.productContainer.querySelector('.quantity-input');
+      const plusBtn = this.productContainer.querySelector(".qty-plus");
+      const minusBtn = this.productContainer.querySelector(".qty-minus");
+      const qtyInput = this.productContainer.querySelector(".quantity-input");
       if (plusBtn && minusBtn && qtyInput) {
-        plusBtn.addEventListener('click', () => {
+        plusBtn.addEventListener("click", () => {
           qtyInput.value = parseInt(qtyInput.value, 10) + 1;
         });
-        minusBtn.addEventListener('click', () => {
+        minusBtn.addEventListener("click", () => {
           qtyInput.value = Math.max(1, parseInt(qtyInput.value, 10) - 1);
         });
       }
@@ -220,11 +233,11 @@ if (!customElements.get('quick-view-modal')) {
      * @param {string} productHandle
      */
     initAddToCart(productHandle) {
-      const addToCartBtn = this.productContainer.querySelector('.add-to-cart');
+      const addToCartBtn = this.productContainer.querySelector(".add-to-cart");
       if (!addToCartBtn) return;
 
-      addToCartBtn.addEventListener('click', () => {
-        const qtyInput = this.productContainer.querySelector('.quantity-input');
+      addToCartBtn.addEventListener("click", () => {
+        const qtyInput = this.productContainer.querySelector(".quantity-input");
         const quantity = qtyInput ? parseInt(qtyInput.value, 10) : 1;
         this.checkAvailabilityAndAdd(addToCartBtn, productHandle, quantity);
       });
@@ -254,38 +267,45 @@ if (!customElements.get('quick-view-modal')) {
       `;
       const variables = { handle: productHandle };
 
-      fetch('/api/2025-04/graphql.json', {
-        method: 'POST',
+      fetch("/api/2025-04/graphql.json", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': 'e8a9c256e3c8425def0482c330a0a47f',
+          "Content-Type": "application/json",
+          "X-Shopify-Storefront-Access-Token": "YOUR_ACCESS_TOKEN_HERE",
         },
         body: JSON.stringify({ query: graphQLQuery, variables }),
       })
         .then((res) => res.json())
         .then((data) => {
-          console.log('Storefront response:', data);
+          console.log("Storefront response:", data);
 
           if (!data.data || !data.data.productByHandle) {
-            throw new Error('Product not found in Storefront API');
+            throw new Error("Product not found in Storefront API");
           }
 
           const variants = data.data.productByHandle.variants.edges;
           if (!variants || variants.length === 0) {
-            throw new Error('No variants found for this product');
+            throw new Error("No variants found for this product");
           }
 
           const variantNode = variants[0].node;
           if (!variantNode.availableForSale) {
-            this.displayMessageAboveBtn(addToCartBtn, 'Sorry, this product is out of stock.', 'error');
+            this.displayMessageAboveBtn(
+              addToCartBtn,
+              "Sorry, this product is out of stock.",
+              "error"
+            );
             return;
           }
 
-          if (variantNode.quantityAvailable !== null && variantNode.quantityAvailable < quantity) {
+          if (
+            variantNode.quantityAvailable !== null &&
+            variantNode.quantityAvailable < quantity
+          ) {
             this.displayMessageAboveBtn(
               addToCartBtn,
               `Sorry, only ${variantNode.quantityAvailable} items available in stock.`,
-              'error'
+              "error"
             );
             return;
           }
@@ -295,7 +315,7 @@ if (!customElements.get('quick-view-modal')) {
           this.addVariantToCart(addToCartBtn, variantId, quantity);
         })
         .catch((err) => {
-          console.error('Availability check error:', err);
+          console.error("Availability check error:", err);
         });
     }
 
@@ -304,26 +324,30 @@ if (!customElements.get('quick-view-modal')) {
      * Converts the Storefront variant ID to its numeric form, then sends the request.
      */
     addVariantToCart(addToCartBtn, storefrontVariantId, quantity) {
-      const numericVariantId = this.extractNumericIdFromGid(storefrontVariantId);
+      const numericVariantId =
+        this.extractNumericIdFromGid(storefrontVariantId);
       if (!numericVariantId) {
-        console.error('Invalid variant ID format');
-        alert('Invalid product variant. Please try again.');
+        console.error("Invalid variant ID format");
+        alert("Invalid product variant. Please try again.");
         return;
       }
 
       // Disable the button, show "Adding..."
       addToCartBtn.disabled = true;
-      addToCartBtn.innerHTML = 'Adding... <span class="loading-spinner"></span>';
+      addToCartBtn.innerHTML =
+        'Adding... <span class="loading-spinner"></span>';
 
-      fetch('/cart/add.js', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      fetch("/cart/add.js", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: numericVariantId, quantity }),
       })
         .then((res) => {
           if (!res.ok) {
             return res.json().then((errData) => {
-              throw new Error(errData.description || `Cart add error: ${res.statusText}`);
+              throw new Error(
+                errData.description || `Cart add error: ${res.statusText}`
+              );
             });
           }
           return res.json();
@@ -345,15 +369,15 @@ if (!customElements.get('quick-view-modal')) {
           `;
           setTimeout(() => {
             this.close();
-            addToCartBtn.innerHTML = 'Add to Cart';
+            addToCartBtn.innerHTML = "Add to Cart";
             addToCartBtn.disabled = false;
           }, 2000);
 
-          console.log('Cart updated:', cartData);
+          console.log("Cart updated:", cartData);
         })
         .catch((err) => {
-          console.error('Add to cart error:', err);
-          addToCartBtn.innerHTML = 'Add to Cart';
+          console.error("Add to cart error:", err);
+          addToCartBtn.innerHTML = "Add to Cart";
           addToCartBtn.disabled = false;
         });
     }
@@ -362,17 +386,19 @@ if (!customElements.get('quick-view-modal')) {
      * Displays a message above the button
      */
 
-    displayMessageAboveBtn(btn, message, type = 'error') {
-      const elMsg = btn.parentElement.parentElement.querySelector('.quick-view-message');
-      elMsg.textContent = '';
+    displayMessageAboveBtn(btn, message, type = "error") {
+      const elMsg = btn.parentElement.parentElement.querySelector(
+        ".quick-view-message"
+      );
+      elMsg.textContent = "";
 
-      if (type === 'error') {
-        elMsg.classList.add('error');
+      if (type === "error") {
+        elMsg.classList.add("error");
       }
       elMsg.textContent = message;
 
       setTimeout(() => {
-        elMsg.textContent = '';
+        elMsg.textContent = "";
       }, 4000);
     }
 
@@ -384,14 +410,14 @@ if (!customElements.get('quick-view-modal')) {
      */
     extractNumericIdFromGid(gid) {
       try {
-        const parts = gid.split('/');
+        const parts = gid.split("/");
         return parts[parts.length - 1];
       } catch (e) {
-        console.error('Error parsing variant ID:', e);
+        console.error("Error parsing variant ID:", e);
         return null;
       }
     }
   }
 
-  customElements.define('quick-view-modal', QuickViewModal);
+  customElements.define("quick-view-modal", QuickViewModal);
 }
