@@ -1,0 +1,320 @@
+{{ 'tpl_showcase-product.css' | asset_url | stylesheet_tag }}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+  href="https://fonts.googleapis.com/css2?family=Manrope:wght@400,500,600,700&family=Sen&display=swap"
+  rel="stylesheet"
+>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
+<script src="{{ 'tpl_showcase-product.js' | asset_url }}" defer="defer"></script>
+
+<div class="tpl_showcase-product">
+  <showcase-product
+    data-section-type="showcase-product"
+    id="showcase-product-{{ section.id }}"
+    data-section-id="{{ section.id }}"
+    data-limit="{{ section.settings.limit }}"
+    data-slider-enabled="{{ section.settings.enable_slider }}"
+  >
+    <div class="showcase-product">
+      <div class="layout{% if section.settings.tab_layout == 'horizontal' %} full-width{% endif %}">
+        {% if section.settings.tab_layout == 'vertical' %}
+          <div>
+            {% if section.settings.title != blank %}
+              <div class="section-title">{{ section.settings.title }}</div>
+            {% endif %}
+            <div class="tabs vertical" id="tabs-{{ section.id }}">
+              {% for block in section.blocks %}
+                {% assign c = block.settings.collection %}
+                {% if c %}
+                  <button
+                    class="collection-tab{% if forloop.first %} active{% endif %}"
+                    data-tab-index="{{ forloop.index0 }}"
+                  >
+                    {% if block.settings.image != blank %}
+                      <img
+                        width="52"
+                        height="52"
+                        src="{{ block.settings.image | image_url: width: 60 }}"
+                        alt="{{ block.settings.block_title }}"
+                      >
+                    {% elsif c.featured_image != blank %}
+                      <img
+                        width="52"
+                        height="52"
+                        src="{{ c.featured_image | image_url: width: 60 }}"
+                        alt="{{ c.featured_image.alt | escape }}"
+                      >
+                    {% endif %}
+                    <span>
+                      {% if block.settings.block_title == '' %}
+                        {{ c.title }}
+                      {% else %}
+                        {{ block.settings.block_title }}
+                      {% endif %}
+                    </span>
+                  </button>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        {% else %}
+          <!-- Horizontal tabs -->
+          <div class="tabs horizontal" id="tabs-{{ section.id }}">
+            {% for block in section.blocks %}
+              {% assign c = block.settings.collection %}
+              {% if c %}
+                <button
+                  id="colection-tab-{{ block.id }}"
+                  class="collection-tab{% if forloop.first %} active{% endif %}"
+                  data-tab-index="{{ forloop.index0 }}"
+                >
+                  {% if block.settings.image != blank %}
+                    <img
+                      width="52"
+                      height="52"
+                      src="{{ block.settings.image | image_url: width: 60 }}"
+                      alt="{{ block.settings.block_title }}"
+                    >
+                  {% elsif c.featured_image != blank %}
+                    <img
+                      width="52"
+                      height="52"
+                      src="{{ c.featured_image | image_url: width: 60 }}"
+                      alt="{{ c.featured_image.alt | escape }}"
+                    >
+                  {% endif %}
+                  <span>
+                    {% if block.settings.block_title == '' %}
+                      {{ c.title }}
+                    {% else %}
+                      {{ block.settings.block_title }}
+                    {% endif %}
+                  </span>
+                </button>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <!-- Tabs content -->
+        <div class="tab-contents">
+          {% for block in section.blocks %}
+            {% assign c = block.settings.collection %}
+            {% assign sale = section.settings.sale_collection %}
+            {% assign launch_date = sale.metafields.custom.countdown.value %}
+            {%- assign now_unix = 'now' | date: '%s' -%}
+            {%- assign launch_unix = sale.metafields.custom.countdown.value | date: '%s' -%}
+            {% assign product_limit = section.settings.limit %}
+            {% assign display_banner = false %}
+
+            {% if sale and launch_date != blank and launch_unix > now_unix %}
+              {% assign display_banner = true %}
+              {% assign product_limit = section.settings.limit | minus: 1 %}
+            {% endif %}
+            {% if c %}
+              <div
+                id="colection-products-{{ block.id }}"
+                class="collection-products{% if forloop.first %} active{% endif %}"
+                data-tab-content="{{ forloop.index0 }}"
+              >
+                <div class="products-grid columns-{{ section.settings.columns }}">
+                  {% if c.all_products_count > 0 %}
+                    {% for product in c.products limit: product_limit %}
+                      {% render 'tpl_product-card',
+                        product: product,
+                        new_label_period: section.settings.new_products_period
+                      %}
+                    {% endfor %}
+                    {% if display_banner %}
+                      {% render 'tpl_sale-banner',
+                        sale_image: section.settings.sale_image,
+                        sale_text: section.settings.sale_text,
+                        launch_date: launch_date
+                      %}
+                    {% endif %}
+                  {% else %}
+                    <p>No products found in this collection.</p>
+                  {% endif %}
+                </div>
+
+                <div class="mobile-view">
+                  {% if c.all_products_count > 0 %}
+                    <div class="swiper-hidden">
+                      <div class="product-slider">
+                        <swiper-container
+                          slides-per-view="1.4"
+                          space-between="16"
+                          navigation="false"
+                          pagination="false"
+                          breakpoints='{"640": {"slidesPerView": "2.4"}, "990": {"slidesPerView": "3.4"}}'
+                        >
+                          {% for product in c.products limit: section.settings.limit %}
+                            <swiper-slide>
+                              {% render 'tpl_product-card',
+                                product: product,
+                                new_label_period: section.settings.new_products_period
+                              %}
+                            </swiper-slide>
+                          {% endfor %}
+                        </swiper-container>
+                      </div>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+
+          <!-- Quick View Container -->
+          <quick-view-modal
+            id="quick-view-modal-{{ section.id }}"
+            data-section-id="{{ section.id }}"
+            class="quick-view-modal"
+            hidden
+          >
+            <button class="quick-view-close" type="button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M16.8387 18L12 13.1613L7.16129 18L6 16.8387L10.8387 12L6 7.16129L7.16129 6L12 10.8387L16.8387 6L18 7.16129L13.1613 12L18 16.8387L16.8387 18Z" fill="#2B2424"/>
+              </svg>
+            </button>
+
+            <div class="preloader" hidden>
+              <span>Loading...</span>
+            </div>
+
+            <div class="product-single"><!-- Quick view content --></div>
+          </quick-view-modal>
+
+          <div class="mobile-view">
+            {% if display_banner %}
+              {% render 'tpl_sale-banner',
+                sale_image: section.settings.sale_image,
+                sale_text: section.settings.sale_text,
+                launch_date: launch_date
+              %}
+            {% endif %}
+          </div>
+        </div>
+        <!-- /.tab-contents -->
+      </div>
+      <!-- /.layout -->
+    </div>
+    <!-- /.showcase-product -->
+  </showcase-product>
+  <!-- showcase-product -->
+</div>
+<!-- /.tpl_showcase-product -->
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js" defer></script>
+
+{% schema %}
+{
+  "name": "Product Showcase (Tabs)",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Product Showcase (Tabs)"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section title",
+      "default": "by collection"
+    },
+
+    {
+      "type": "range",
+      "id": "limit",
+      "label": "Number of products per tab",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_slider",
+      "label": "Enable mobile slider (Swiper.js)",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "Desktop grid columns",
+      "options": [
+        { "value": "3", "label": "3 Columns" },
+        { "value": "4", "label": "4 Columns" }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "collection",
+      "id": "sale_collection",
+      "label": "Collection for countdown banner"
+    },
+
+    {
+      "type": "richtext",
+      "id": "sale_text",
+      "label": "Banner text",
+      "default": "<p>Big Sale!</p>"
+    },
+
+    {
+        "type": "image_picker",
+        "id": "sale_image",
+        "label": "Banner image"
+      },
+    {
+      "type": "select",
+      "id": "tab_layout",
+      "label": "Tab layout",
+      "options": [
+        { "value": "vertical", "label": "Vertical (Sidebar)" },
+        { "value": "horizontal", "label": "Horizontal (Above products)" }
+      ],
+      "default": "vertical"
+    },
+    {
+        "type": "text",
+        "id": "new_products_period",
+        "label": "'New' products marker",
+        "default": "7",
+        "info": "Number of days for which the product is considered as \"New\""
+      }
+  ],
+  "blocks": [
+    {
+      "type": "collection_tab",
+      "name": "Collection Tab",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Tab image"
+        },
+        {
+          "type": "text",
+          "id": "block_title",
+          "label": "Tab title"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Showcase (Tabs)",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

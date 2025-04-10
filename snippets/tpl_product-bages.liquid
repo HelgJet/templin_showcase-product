@@ -1,0 +1,24 @@
+{% if my_fields.value != null %}
+    <span class="product-badge custom-label">{{ my_fields.value }}</span>
+  {% else %}
+    {% if sold_out %}
+      <span class="product-badge sold-out">Sold out</span>
+  
+    {% elsif compare_at_price > price and available and days_since_published <= new_label_period %}
+      <span
+        class="product-badge sale"
+        >SALE</span
+      >
+      <span class="product-badge new">NEW</span>
+  
+    {% elsif compare_at_price > price and available %}
+      <span class="product-badge sale">SALE</span>
+  
+    {% elsif days_since_published <= new_label_period %}
+      <span class="badge new">NEW</span>
+  
+    {% elsif available %}
+      <span class="product-badge back-in-stock">Back in stock</span>
+    {% endif %}
+  {% endif %}
+  

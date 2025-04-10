@@ -1,0 +1,37 @@
+<div
+    class="sale-banner"
+    style="background: url('{{ sale_image | img_url: 'master' }}') no-repeat center/cover;"
+    data-countdown="{{ launch_date }}"
+  >
+    <div class="sale-banner__inner">
+      {% if sale_text %}
+        <div class="sale-banner__title">{{ sale_text }}</div>
+      {% endif %}
+  
+      <div class="sale-banner__footer">
+        <countdown-timer data-datetime="{{ launch_date }}" class="countdown-timer">
+          <div class="days time-wrapper">
+            <span data-days class="time days">00</span>
+            <span class="separator days">Days</span>
+          </div>
+          <span class="divider"></span>
+          <div class="hours time-wrapper">
+            <span data-hours class="time hours">00</span>
+            <span class="separator hours">Hours</span>
+          </div>
+          <span class="divider"></span>
+          <div class="minutes time-wrapper">
+            <span data-minutes class="time minutes">00</span>
+            <span class="separator minutes">Minutes</span>
+          </div>
+          <span class="divider"></span>
+          <div class="seconds time-wrapper">
+            <span data-seconds class="time seconds">00</span>
+            <span class="separator seconds">Seconds</span>
+          </div>
+        </countdown-timer>
+        <a href="{{ sale.url }}" class="sale-banner__button btn">Shop Now</a>
+      </div>
+    </div>
+  </div>
+  

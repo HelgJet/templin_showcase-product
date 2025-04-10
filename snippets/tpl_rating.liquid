@@ -1,0 +1,14 @@
+  
+  {% liquid
+    assign rating_value = rating.rating | plus: 0
+    assign rating_max = rating.scale_max | default: 5 | plus: 0
+    assign percent_filled = rating_value | times: 100.0 | divided_by: rating_max
+  %}
+  <span 
+    class="rating"
+    role="img"
+    aria-label="{{ rating_value }} out of {{ rating_max }} stars"
+    style="--fill-percent: {{ percent_filled }}%;"
+  ></span>
+  <span class="review-count">15 REVIEWS</span>
+            

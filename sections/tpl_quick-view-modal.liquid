@@ -1,0 +1,98 @@
+{% if product %}
+  {%- liquid
+    assign compare_at_price = product.compare_at_price
+    assign price = product.price
+    assign price_varies = product.price_varies
+    assign available = product.available
+    assign money_price = price | money
+    if price_varies
+      assign money_price = 'From {{ price }}'
+    endif
+    assign sold_out = true
+    if product.available
+      assign sold_out = false
+    endif
+
+    assign rating = product.metafields.custom.rating.value
+    assign new_label_period = section.settings.new_label_period | plus: 0
+    assign now = 'now' | date: '%s'
+    assign published_at = product.published_at | date: '%s'
+    assign days_since_published = now | minus: published_at | divided_by: 86400
+  -%}
+  {%- assign money_price = price | money -%}
+
+  <div class="product-single">
+    <div class="quick-view-grid">
+      <div class="quick-view-image">
+        {%- if product.featured_media != blank -%}
+          <img
+            height="480"
+            width="480"
+            class="product-image"
+            src="{{ product.featured_image | image_url: width: 500 }}"
+            alt="{{ product.featured_image.alt }}"
+            loading="lazy"
+          >
+        {%- endif -%}
+      </div>
+      <div class="quick-view-content">
+        <div class="quick-view-row">
+          <div class="quick-view-badges">
+            {% render 'tpl_product-bages',
+              compare_at_price: compare_at_price,
+              available: available,
+              price: price,
+              sold_out: sold_out,
+              my_fields: product.metafields.custom.custom_label,
+              days_since_published: days_since_published,
+              new_label_period: new_label_period
+            %}
+          </div>
+          {% if rating %}
+            <div class="quick-view-rating product-rating">
+              {% render 'tpl_rating', rating: rating %}
+            </div>
+          {% endif %}
+        </div>
+
+        <div
+          class="quick-view-vendor product-vendor spacer"
+          {% if product.vendor == shop.name %}
+            style="visibility: hidden;"
+          {% endif %}
+        >
+          {{ product.vendor }}
+        </div>
+
+        <h2 class="quick-view-title product-title">{{ product.title }}</h2>
+        {% if product.description != blank %}
+          <div class="quick-view-description product-description spacer">{{ product.description | strip_html }}</div>
+        {% endif %}
+        <div class="quick-view-price product-price spacer">
+          {% if compare_at_price and compare_at_price > price %}
+            <span class="old-price">{{ compare_at_price | money }}</span>
+          {% endif %}
+          <span class="new-price"> {{ money_price }}</span>
+        </div>
+        <div class="quick-view-quantity spacer">
+          <button class="qty-minus">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M10.5232 10.5234C10.374 10.5234 9.47613 10.5237 9.47613 10.5237L5.10655 10.5234C4.95822 10.5234 4.83391 10.4729 4.73363 10.3719C4.63322 10.2711 4.58301 10.1462 4.58301 9.99715C4.58301 9.84798 4.63322 9.72388 4.73363 9.62486C4.83391 9.52583 4.95822 9.47632 5.10655 9.47632H9.47613H10.5232H14.8928C15.0411 9.47632 15.1654 9.5268 15.2657 9.62777C15.3661 9.72861 15.4163 9.85354 15.4163 10.0026C15.4163 10.1517 15.3661 10.2758 15.2657 10.3749C15.1654 10.4739 15.0411 10.5234 14.8928 10.5234C14.8928 10.5234 10.6724 10.5234 10.5232 10.5234Z" fill="#685A5C"/>
+            </svg>
+          </button>
+          <input class="quantity-input" type="text" value="1">
+          <button class="qty-plus">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M9.47613 10.5236H5.10655C4.95822 10.5236 4.83391 10.4731 4.73363 10.3721C4.63322 10.2713 4.58301 10.1464 4.58301 9.99733C4.58301 9.84817 4.63322 9.72407 4.73363 9.62504C4.83391 9.52601 4.95822 9.4765 5.10655 9.4765H9.47613V5.10692C9.47613 4.95858 9.52662 4.83428 9.62759 4.734C9.72842 4.63358 9.85335 4.58337 10.0024 4.58337C10.1515 4.58337 10.2756 4.63358 10.3747 4.734C10.4737 4.83428 10.5232 4.95858 10.5232 5.10692V9.4765H14.8928C15.0411 9.4765 15.1654 9.52698 15.2657 9.62796C15.3661 9.72879 15.4163 9.85372 15.4163 10.0027C15.4163 10.1519 15.3661 10.276 15.2657 10.375C15.1654 10.4741 15.0411 10.5236 14.8928 10.5236H10.5232V14.8932C10.5232 15.0415 10.4727 15.1658 10.3718 15.2661C10.2709 15.3665 10.146 15.4167 9.99697 15.4167C9.8478 15.4167 9.7237 15.3665 9.62467 15.2661C9.52565 15.1658 9.47613 15.0415 9.47613 14.8932V10.5236Z" fill="#685A5C"/>
+            </svg>
+          </button>
+        </div>
+        <div class="quick-view-message"></div>
+        <div class="quick-view-actions spacer">
+          <button class="btn add-to-cart">Add to Cart</button>
+          <a href="{{ product.url }}" class="btn more-details">More Details</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
